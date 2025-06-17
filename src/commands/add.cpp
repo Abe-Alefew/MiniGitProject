@@ -4,7 +4,7 @@
 #include <filesystem>
 #include "../../include/core/blob.hpp"
 #include "../../src/commands/hashing.hpp"
-
+#include "../../src/utils/hashing.cpp"
 using namespace std;
 namespace fs = std::filesystem;
 
