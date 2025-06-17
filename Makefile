@@ -2,6 +2,9 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Iinclude -Wall -Wextra -g
 
+# Linker flags for OpenSSL
+LDFLAGS = -lssl -lcrypto
+
 # Source files
 SRC = src/main.cpp \
       src/commands/add.cpp \
@@ -17,9 +20,9 @@ TARGET = minigit
 # Default target
 all: $(TARGET)
 
-# Link the executable
+# Link the executable with OpenSSL
 $(TARGET): $(OBJ)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 # Compile source files to object files
 %.o: %.cpp
@@ -32,6 +35,9 @@ clean:
 # Run tests (you can customize these commands)
 test: $(TARGET)
 	@echo "Running sample tests..."
+	@./$(TARGET) init
+	@touch testfile.txt
+	@echo "Hello MiniGit!" > testfile.txt
 	@./$(TARGET) add testfile.txt
 	@echo "Tests done."
 
