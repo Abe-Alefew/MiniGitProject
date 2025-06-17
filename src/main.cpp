@@ -1,24 +1,27 @@
 #include <iostream>
-#include <string>
+#include "../src/commands/add.hpp"
 
-
-int initCommand();
+using namespace std;
 
 int main(int argc, char *argv[])
 {
-    
-    if (argc < 2)
+    if (argc < 3)
     {
-        std::cout << "Usage: minigit <command>\n";
+        cerr << "Usage: minigit add <filename>\n";
         return 1;
     }
-    
-    std::string command = argv[1];
-    if (command == "init")
+
+    string command = argv[1];
+    string filename = argv[2];
+
+    if (command == "add")
     {
-        return initCommand();
+        addFile(filename);
+    }
+    else
+    {
+        cerr << "Unknown command.\n";
     }
 
-    std::cout << "Unknown command: " << command << "\n";
-    return 1;
+    return 0;
 }
