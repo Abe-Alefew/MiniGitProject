@@ -1,44 +1,19 @@
-# Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Iinclude -Wall -Wextra -g
+CXXFLAGS = -std=c++17 -Iinclude -I"C:/Users/hp/scoop/apps/openssl/current/include"
+SRC = $(wildcard src/*.cpp) $(wildcard src/*/*.cpp) $(wildcard src/*/*/*.cpp)
+OUT = minigit
+LDFLAGS = -L"C:/Users/hp/scoop/apps/openssl/current/lib" -lssl -lcrypto
 
-# Linker flags for OpenSSL
-LDFLAGS = -lssl -lcrypto
-
-# Source files
-SRC = src/main.cpp \
-      src/commands/add.cpp \
-      src/utils/hashing.cpp \
-      src/core/blob.cpp
-
-# Object files
-OBJ = $(SRC:.cpp=.o)
-
-# Executable name
-TARGET = minigit
-
-# Default target
-all: $(TARGET)
-
-# Link the executable with OpenSSL
-$(TARGET): $(OBJ)
+$(OUT): $(SRC)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-# Compile source files to object files
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-# Clean build files
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -f $(OUT)
 
-# Run tests (you can customize these commands)
-test: $(TARGET)
+test: $(OUT)
 	@echo "Running sample tests..."
-	@./$(TARGET) init
+	@./$(OUT) init
 	@touch testfile.txt
 	@echo "Hello MiniGit!" > testfile.txt
-	@./$(TARGET) add testfile.txt
+	@./$(OUT) add testfile.txt
 	@echo "Tests done."
-
-.PHONY: all clean test
