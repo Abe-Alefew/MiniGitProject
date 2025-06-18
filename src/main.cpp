@@ -1,7 +1,11 @@
 #include <iostream>
+#include <vector>
 #include "../src/commands/add.hpp"
 
 using namespace std;
+
+void handleBranchCommand(const string& repoPath, const vector<string>& args);
+void handleCheckoutCommand(const string& repoPath, const vector<string>& args);
 
 int main(int argc, char *argv[])
 {
@@ -14,11 +18,17 @@ int main(int argc, char *argv[])
     string command = argv[1];
     string filename = argv[2];
 
+    string repoPath = ".minigit/";
+    vector<string> args(argv + 1, argv + argc);
+
     if (command == "add")
     {
         addFile(filename);
-    }
-    else
+    } else if (command == "branch") {
+        handleBranchCommand(repoPath, args);
+    } else if (command == "checkout") {
+        handleCheckoutCommand(repoPath, args);
+    } else
     {
         cerr << "Unknown command.\n";
     }
