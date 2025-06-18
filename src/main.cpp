@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         return initCommand();
     } else if (command == "add"){
         if(argc < 3) {
-            std::cerr<< "Usage: minigit add <file>\n";
+            std::cerr<< "Usage: ./minigit add <file>\n";
             return 1;
         }
 
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
         if(argc >= 4 && std::string(argv[2]) == "-m"){
             message = argv[3];
         } else {
-            std:: cerr << "Usage: minigit commit -m \"message\"\n";
+            std:: cerr << "Usage: ./minigit commit -m \"message\"\n";
             return 1;
         }
         return commitCommand(message);
