@@ -2,7 +2,14 @@
 #define BLOB_HPP
 
 #include <string>
-void writeBlob(const std::string &path, const std::string &content);
-std::string readFileContents(const std::string &filename);
+
+namespace mgit {
+
+class Blob {
+public:
+    static std::string create(const std::string& filepath);
+};
+
+} 
 
 #endif
