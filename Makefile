@@ -50,6 +50,9 @@ test: $(TARGET)
 	@./$(TARGET) add testfile.txt
 	@./$(TARGET) commit -m "Test Commit"
 	@./$(TARGET) log
+	@./$(TARGET) branch
+	@./$(TARGET) branch test-branch
+	@./$(TARGET) checkout test-branch
 	@echo "Tests done."
 
 .PHONY: all clean test
