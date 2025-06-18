@@ -1,44 +1,34 @@
-# Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Iinclude -Wall -Wextra -g
+CXXFLAGS = -std=c++17 -Iinclude
 
-# Linker flags for OpenSSL
-LDFLAGS = -lssl -lcrypto
+OPENSSL_INC ?= C:/Users/$(USERNAME)/scoop/apps/openssl/current/include
+OPENSSL_LIB ?= C:/Users/$(USERNAME)/scoop/apps/openssl/current/lib
 
-# Source files
-SRC = src/main.cpp \
-      src/commands/add.cpp \
-      src/utils/hashing.cpp \
-      src/core/blob.cpp
+ifeq ("$(wildcard $(OPENSSL_INC)/openssl/sha.h)","")
+$(error OpenSSL headers not found at $(OPENSSL_INC). Please install OpenSSL or set OPENSSL_INC and OPENSSL_LIB manually.)
+endif
 
-# Object files
-OBJ = $(SRC:.cpp=.o)
+ifeq ("$(wildcard $(OPENSSL_LIB)/libcrypto.lib)","")
+ifeq ("$(wildcard $(OPENSSL_LIB)/libcrypto.a)","")
+$(error OpenSSL libraries not found at $(OPENSSL_LIB). Please install OpenSSL or set OPENSSL_LIB manually.)
+endif
+endif
 
-# Executable name
-TARGET = minigit
+CXXFLAGS += -I"$(OPENSSL_INC)"
+LDFLAGS = -L"$(OPENSSL_LIB)" -lssl -lcrypto
 
-# Default target
-all: $(TARGET)
+SRC = $(wildcard src/*.cpp) $(wildcard src/*/*.cpp) $(wildcard src/*/*/*.cpp)
+OUT = minigit
 
-# Link the executable with OpenSSL
-$(TARGET): $(OBJ)
+$(OUT): $(SRC)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-# Compile source files to object files
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-# Clean build files
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -f $(OUT)
 
-# Run tests (you can customize these commands)
-test: $(TARGET)
+test: $(OUT)
 	@echo "Running sample tests..."
-	@./$(TARGET) init
-	@touch testfile.txt
-	@echo "Hello MiniGit!" > testfile.txt
-	@./$(TARGET) add testfile.txt
-	@echo "Tests done."
-
-.PHONY: all clean test
+	@$(OUT) init
+	@echo Hello > testfile.txt
+	@$(OUT) add testfile.txt
+	@echo "Tests completed."
