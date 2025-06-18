@@ -20,7 +20,7 @@ void handleCheckoutCommand(const string& repoPath, const vector<string>& args) {
     //get HEAD commit of target branch
     string targetCommit = bm.getBranchHead(branchName);
     //update .minigit/HEAD to point to this branch
-    ofstream headFile(repoPath + "HEAD/");
+    ofstream headFile(repoPath + "HEAD");
 
     if (headFile) {
         headFile << targetCommit;
