@@ -15,7 +15,10 @@ SRC = src/main.cpp \
       src/core/blob.cpp\
 	  src/core/repository.cpp\
 	  src/commands/init.cpp\
-	  src/utils/file_io.cpp
+	  src/utils/file_io.cpp\
+	src/commands/checkout.cpp\
+	src/commands/branch.cpp\
+	src/core/branch.cpp
 
 # Object files
 OBJ = $(SRC:.cpp=.o)
