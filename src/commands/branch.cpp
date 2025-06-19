@@ -2,6 +2,7 @@
 #include <iostream>
 using namespace std;
 
+// gets args from main
 void handleBranchCommand(const string& repoPath, const vector<string>& args) {
     BranchManager bm(repoPath);
     if (args.size() == 1) { //no argument, means list branches

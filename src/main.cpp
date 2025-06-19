@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    //args wraps the arguments given after ./minigit in the CLI into a vector to pass along the handlers
     const vector<string> args(argv + 1, argv + argc);
     const string repoPath = ".minigit/";
     string command = argv[1];
