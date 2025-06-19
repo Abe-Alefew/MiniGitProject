@@ -77,7 +77,7 @@ namespace mgit
             fs::create_directories(".minigit/blobs");
 
             // HEAD points to the default branch
-            ofstream(".minigit/HEAD") << "main";
+            ofstream(".minigit/HEAD") << "ref: branches/main";
             // Create an empty branch 'main' initially
             ofstream(".minigit/branches/main") << "";
             ofstream(".minigit/staging_area.json") << "{}";
@@ -144,13 +144,26 @@ namespace mgit
         string content = commit.serialize();
         commit.hash = generateHash(content);
         content = commit.serialize(); // regenerate with hash
-
-        // Save new HEAD (hash) and commit file
-        ofstream(".minigit/HEAD") << commit.hash;
+        // Save commit file
         ofstream(".minigit/commits/" + commit.hash + ".json") << content;
 
-        // Update branch reference (assume HEAD = "main")
-        ofstream(".minigit/branches/main") << commit.hash;
+        // Read current branch from HEAD
+        ifstream headIn(".minigit/HEAD");
+        string headLine;
+        getline(headIn, headLine);
+
+        if (headLine.rfind("ref: ", 0) == 0){
+            string branchPath = headLine.substr(5); // Remove "ref: "
+            ofstream(".minigit/" + branchPath) << commit.hash;
+
+            // Optionally, write HEAD again just to be safe
+            ofstream(".minigit/HEAD") << "ref: " + branchPath;
+        }
+        else {
+            cout << "Invalid HEAD. Cannot determine current branch.\n";
+            return 1;
+        }
+
 
         // Clear staging area
         ofstream(".minigit/staging_area.json") << "{}";
