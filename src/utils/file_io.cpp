@@ -1,28 +1,29 @@
-#include "core/file_io.hpp"
 #include <fstream>
 #include <sstream>
 #include "utils/file_io.hpp"
 #include <chrono>
 #include <ctime>
 #include <iomanip>
-
+using namespace std;
+using namespace std::chrono;
 namespace mgit {
 
-std::string getCurrentTimeStamp() {
-    auto now = std::chrono::system_clock::now();
-    std::time_t t = std::chrono::system_clock::to_time_t(now);
+string getCurrentTimeStamp() {
+    auto now = system_clock::now();
+    time_t t = system_clock::to_time_t(now);
 
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&t), "%Y-%m-%d %H:%M:%S");
+    stringstream ss;
+    ss << put_time(localtime(&t), "%Y-%m-%d %H:%M:%S");
     return ss.str();
 }
 
-}
-
-
-std::string readFile(const std::string& filepath) {
-    std::ifstream in(filepath);
-    std::stringstream ss;
+string readFile(const string& filepath) {
+    ifstream in(filepath);
+    stringstream ss;
     ss << in.rdbuf();
     return ss.str();
 }
+}
+
+
+
