@@ -21,9 +21,9 @@ void handleCheckoutCommand(const string& repoPath, const vector<string>& args) {
     string targetCommit = bm.getBranchHead(branchName);
     //update .minigit/HEAD to point to this branch
     ofstream headFile(repoPath + "HEAD");
-
+    
     if (headFile) {
-        headFile << targetCommit;
+        headFile << "ref: branches/" << branchName;
         headFile.close();
     } else {
         cout << "Error: could not update HEAD.\n";
