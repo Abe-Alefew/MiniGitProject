@@ -4,17 +4,17 @@
 #include<string>
 #include<map>
 #include<vector>
-
+using namespace std;
 namespace mgit{
     struct Commit {
-        std::string hash;
-        std::string parent;
-        std::string message;
-        std::string timestamp;
-        std::map<std::string, std::string> files;
+        string hash;
+        string parent;
+        string message;
+        string timestamp;
+        map<string,string> files;
 
-        std::string serialize() const;
-        static Commit deserialize(const std::string& content);
+        string serialize() const;// we make const at last because we are not changing the state of the object
+        static Commit deserialize(const string& content);
     };
 }
 

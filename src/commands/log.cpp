@@ -1,28 +1,29 @@
 #include "core/repository.hpp"
 #include <iostream>
-
+using namespace std;
+using namespace mgit;
 int logCommits()
 {
-    mgit::Repository repo;
+    Repository repo;
 
     if (!repo.isInitialized())
     {
-        std::cerr << "Repository not initialized.\n";
+        cout << "Repository not initialized.\n" << endl;
         return 1;
     }
 
-    mgit::Commit current = repo.getHeadCommit();
+    Commit current = repo.getHeadCommit();
 
    while (!current.hash.empty())
 {
-    std::cout << "commit: " << current.hash << "\n";
-    std::cout << "Date: " << current.timestamp << "\n";
-    std::cout << "Message: " << current.message << "\n";
-    std::cout << "Files:\n";
+    cout << "commit: " << current.hash << "\n";
+    cout << "Date: " << current.timestamp << "\n";
+    cout << "Message: " << current.message << "\n";
+    cout << "Files:\n";
     for (const auto& [filename, blob] : current.files) {
-        std::cout << "  " << filename << "\n";
+        cout << "  " << filename << "\n";
     }
-    std::cout << "\n";
+    cout << "\n";
 
     if (current.parent.empty()) break; 
 

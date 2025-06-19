@@ -1,43 +1,46 @@
 #include <iostream>
 #include <string>
 #include <vector>
+using namespace std;
 
-
+// intializing the functions
 int initCommand();
-int addCommand(const std::string& filename);
-int commitCommand(const std::string& message);
+int addCommand(const string& filename);
+int commitCommand(const string& message);
 int logCommits();
-void handleBranchCommand(const std::string& repoPath, const std::vector<std::string>& args);
-void handleCheckoutCommand(const std::string& repoPath, const std::vector<std::string>& args);
+void handleBranchCommand(const string& repoPath, const vector<string>& args);
+void handleCheckoutCommand(const string& repoPath, const vector<string>& args);
 
 int main(int argc, char *argv[])
 {
-    
+    // argc represents the number of command line arguments passed to program
+    //argv represents the array of c-style strings where each element is one of the command line arguments.
+    // argv[0] - program name ( in our case - ./minigit) argv[1] - argv[argc-1] are the additional arguments
     if (argc < 2)
     {
-        std::cout << "Usage: minigit <command>\n";
+        cout << "Usage: ./minigit <command>\n";
         return 1;
     }
 
-    const std::vector<std::string> args(argv + 1, argv + argc);
-    const std::string repoPath = ".minigit/";
-    std::string command = argv[1];
-    if (command == "init")
-    {
-        return initCommand();
-    } else if (command == "add"){
-        if(argc < 3) {
-            std::cerr<< "Usage: ./minigit add <file>\n";
-            return 1;
-        }
+    const vector<string> args(argv + 1, argv + argc);
+    const string repoPath = ".minigit/";
+    string command = argv[1];
 
+
+    
+    if (command == "init") return initCommand();
+    else if (command == "add"){
+        if(argc < 3) {
+            cout << "Usage: ./minigit add <file>\n" << endl;
+            return 1; // to show an error has occured and exiting immediately
+        }
         return addCommand(argv[2]);
     } else if(command == "commit"){
-        std::string message;
-        if(argc >= 4 && std::string(argv[2]) == "-m"){
+        string message;
+        if(argc >= 4 && string(argv[2]) == "-m"){
             message = argv[3];
         } else {
-            std:: cerr << "Usage: ./minigit commit -m \"message\"\n";
+            cout << "Usage: ./minigit commit -m \"message\"\n";
             return 1;
         }
         return commitCommand(message);
@@ -48,7 +51,7 @@ int main(int argc, char *argv[])
     } else if (command == "checkout") {
         handleCheckoutCommand(repoPath, args);
     } else {
-        std::cout << "Unknown command: " << command << "\n";
+        cout << "Unknown command: " << command << "\n";
         return 1;
     }
 

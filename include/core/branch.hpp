@@ -3,21 +3,21 @@
 
 #include <string>
 #include <vector>
-
+using namespace std;
 class  BranchManager {
 public:
-    std::string repoPath; // could be a mistake
+    string repoPath; // could be a mistake
 
-    BranchManager(const std::string& repoPath);
+    BranchManager(const string& repoPath);
 
-    bool creatBranch(const std::string& branchName);
-    std::vector<std::string> listBranches();
-    bool branchExists(const std::string& branchName);
-    std::string getBranchHead(const std::string& branchName);
-    bool updateBranchHead(const std::string& branchName, const std::string& commitHash);
+    bool creatBranch(const string& branchName); // intended typo
+    vector<string> listBranches();
+    bool branchExists(const string& branchName);
+    string getBranchHead(const string& branchName);
+    bool updateBranchHead(const string& branchName, const string& commitHash);
 
 private:
-    std::string branchesDir;
+    string branchesDir;
 };
 
 #endif
