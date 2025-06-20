@@ -19,7 +19,8 @@ SRC = src/main.cpp \
 	src/commands/checkout.cpp\
 	src/commands/branch.cpp\
 	src/core/branch.cpp\
-	src/commands/merge.cpp
+	src/commands/merge.cpp\
+	src/utils/diff.cpp
 # Object files
 OBJ = $(SRC:.cpp=.o)
 

@@ -1,4 +1,4 @@
-#include "diff.hpp"
+#include "utils/diff.hpp"
 #include <iostream> 
 #include <fstream>
 #include <sstream> 
@@ -7,6 +7,8 @@
 #include <vector> 
 #include <algorithm> 
 #include <map> 
+#include<nlohmann/json.hpp>
+using json = nlohmann::json;
 
 namespace f = std::filesystem; 
 using namespace std; 
@@ -20,32 +22,42 @@ using namespace std;
  
 
 string getLastBlobHash(const string& filename){//get the blob hash of the file... before we have done some editing
-    ifstream commitFile(".minigit/HEAD");//use HEAD to get the last commit
-    string commitId; 
-    std::getline(commitFile, commitId); 
-    commitFile.close(); 
+    ifstream headFile(".minigit/HEAD");//use HEAD to get the last commit
+    if (!headFile.is_open()) return "";
 
+    string headLine; 
+    std::getline(headFile, headLine); 
+    headFile.close(); 
+
+    if (headLine.rfind("ref: ", 0) != 0) return "";
+
+    string branchPath = headLine.substr(5);  // "branches/main"
+    ifstream branchFile(".minigit/" + branchPath);
+    if (!branchFile.is_open()) return "";
+
+    string commitId;
+    getline(branchFile, commitId);
+    branchFile.close();
+
+    if (commitId.empty()) return "";
     //use the commit id found from step one to find the corresponding blob(file) based on its name
-    ifstream blobFile(".minigit/commits/" + commitId); 
-    string line; 
-    bool isfile = false; 
-    //fine the file by comparing it with the file name that is found in the latest commit
-    while(std::getline(blobFile, line)){
-        if(line == "files:"){
-            isfile = true; 
-            continue; 
-        }
-        if(isfile && !line.empty()){
-            size_t colon_pos = line.find(':'); 
-            string file = line.substr(0, colon_pos); 
-            string hash = line.substr(colon_pos + 1);
-            if(file == filename) return hash; 
-        }
+    ifstream commitJsonFile(".minigit/commits/" + commitId + ".json");
+    if (!commitJsonFile.is_open()) return "";
+
+    json commitJson;
+    commitJsonFile >> commitJson;
+
+    if (!commitJson.contains("files")) return "";
+
+    json files = commitJson["files"];
+    if (files.contains(filename)) {
+        return files[filename];
     }
-    return ""; 
+
+    return "";
 }
 
-string blobContent(const string& blobHash){//now that we have got the blobhash from the previous function we can read the content of the file
+string blobContent_diff(const string& blobHash){//now that we have got the blobhash from the previous function we can read the content of the file
     ifstream blob(".minigit/blobs/" + blobHash);//get into the specific file  
     stringstream content; 
     content << blob.rdbuf();//read the whole file at once and put it in the stream content 
@@ -130,7 +142,7 @@ void diffCommand(const string& filename){
         return; 
     }
     //now read the content of the old version, we could just use the blobcontent function that we already did
-    string oldContent = blobContent(blobHash); 
+    string oldContent = blobContent_diff(blobHash); 
     //read the contents from the current working file
     ifstream currentFile(filename); 
     if(!currentFile.is_open()){

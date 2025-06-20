@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
 using namespace std;
 
 // intializing the functions
@@ -11,6 +12,7 @@ int logCommits();
 void handleBranchCommand(const string& repoPath, const vector<string>& args);
 void handleCheckoutCommand(const string& repoPath, const vector<string>& args);
 void mergeBranch(const string& targetBranch);
+void diffCommand(const string& filename); 
 int main(int argc, char *argv[])
 {
     // argc represents the number of command line arguments passed to program
@@ -55,7 +57,15 @@ int main(int argc, char *argv[])
         string targetBranch = argv[2];
         mergeBranch(targetBranch);
         cout << "Merged branch '" << targetBranch << "' into current branch.\n";
-    }else {
+    } else if (command == "diff") {
+        if (argc < 3) {
+            cout << "Usage: ./minigit diff <file>\n";
+            return 1;
+        }
+        string filename = argv[2];
+        diffCommand(filename);
+    }
+    else {
         cout << "Unknown command: " << command << "\n";
         return 1;
     }
