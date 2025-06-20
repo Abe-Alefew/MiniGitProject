@@ -25,9 +25,6 @@ int main(int argc, char *argv[])
     const vector<string> args(argv + 1, argv + argc);
     const string repoPath = ".minigit/";
     string command = argv[1];
-
-
-    
     if (command == "init") return initCommand();
     else if (command == "add"){
         if(argc < 3) {

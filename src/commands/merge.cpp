@@ -14,10 +14,12 @@
 #include<algorithm>
 #include<nlohmann/json.hpp>
 using json = nlohmann::json;
+
 using namespace std; 
 namespace f = std::filesystem; // just an alias to shorten filesystem usage
 
 //we first have to check if the files are present in the first place
+
 // the runtime files like ".minigit/branches", ".minigit/commits", ".minigit/blobs"...
 // we use the filesystem to check and create them 
 void folderExists(){
@@ -91,8 +93,6 @@ void collectAncestors(const string& commitId, map<string, int>& ancestors, int d
     if(commitId.empty() || ancestors.count(commitId)) return;// if root is reached or if already visited
 
     ancestors[commitId] = depth;
-
-
     ifstream file(".minigit/commits/" + commitId + ".json");//open the commit to find the parent and traverse deep
     if (!file.is_open()) {
     cerr << "Error: file not found." << " .minigit/commits/" << commitId << ".json" <<endl; 
@@ -144,7 +144,6 @@ string findCommonAncestor(const string& commitIdOurs, const string& commitIdThei
 //main merge function to merge the two functions 
 void mergeBranch(const string& targetBranch){
     folderExists(); 
-
     // read current branch from head
     ifstream head(".minigit/HEAD"); 
     if (!head.is_open()) {
@@ -159,8 +158,6 @@ void mergeBranch(const string& targetBranch){
         cerr << "Invalid HEAD format.\n";
         return;
     }
-
-
     string currentBranchPath = refLine.substr(5);  // e.g., "branches/main"
     string currentBranch = currentBranchPath.substr(currentBranchPath.find_last_of('/') + 1);
     //get the commitId 
@@ -182,6 +179,7 @@ void mergeBranch(const string& targetBranch){
     string theirCommitId;
     getline(targetFile, theirCommitId);
     targetFile.close();
+
 
     //get the commitId for base 
     string baseCommitId = findCommonAncestor(ourCommitId, theirCommitId); 
@@ -214,10 +212,7 @@ void mergeBranch(const string& targetBranch){
             //retrieve both files contents
             string oursContent = blobContent(oursFileHash); 
             string theirsContent = blobContent(theirsFileHash);
-
-
             string conflict = "<<<<<<< ours\n" + oursContent + "\n=======\n" + theirsContent + "\n>>>>>>> theirs\n"; 
-
             string mergedHash = saveBlob(conflict);//create a new blob file for conflict 
             mergedFiles[file] = mergedHash; 
         }
@@ -234,7 +229,6 @@ void mergeBranch(const string& targetBranch){
     auto now = chrono::system_clock::to_time_t(chrono::system_clock::now());
     string timestamp = string(ctime(&now)); 
     timestamp.pop_back(); 
-
     //now create the json file
     // Prepare parents as a JSON array
     json parents = json::array({ourCommitId, theirCommitId});
