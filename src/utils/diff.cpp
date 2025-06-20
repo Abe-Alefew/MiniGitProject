@@ -151,3 +151,41 @@ void diffCommand(const string& filename){
     showDiff(oldLines, newLines); 
 }
 
+// a  function for showing the difference between two files 
+void diffBetwenFiles(const string& file1, const string& file2){
+    ifstream file1content(file1); 
+    ifstream file2content(file2); 
+    
+    //check if we have opened the files, if now throw some exception lines 
+    if(!file1content.is_open()){
+        cout << RED << "failed to open " << file1 << endl; 
+        return; 
+    }
+    if(!file2content.is_open()){
+        cout << RED << "failed to open " << file2 << endl; 
+        return; 
+    }
+
+    //now read all he contents of file1 and file2 and compare on a line_by_line based comparison
+    stringstream buffer1, buffer2;//for reading all the contetns in both files
+    string file1stringcontent, file2stringcontent;//for storing the read contents from the two files 
+
+    //add all the content of the files to stringstreams for a better read of all contents at once
+    buffer1 << file1content.rdbuf(); 
+    buffer2 << file2content.rdbuf(); 
+
+    //change the string streams to strings 
+    file1stringcontent = buffer1.str(); 
+    file2stringcontent = buffer2.str(); 
+
+    file1content.close(); 
+    file2content.close(); 
+    //now we just split using our already made function splitLines 
+    vector<string> file1vector = splitLines(file1stringcontent); 
+    vector<string> file2vector = splitLines(file2stringcontent); 
+
+    //we are now using the show diff function to show the difference and print it
+    showDiff(file1vector, file2vector);
+}
+
+
