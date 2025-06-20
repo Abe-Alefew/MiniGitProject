@@ -100,7 +100,7 @@ void showDiff(const vector<string>& oldLines, const vector<string>& newLines){
     }
 }
 
-void diffcommand(string& filename){
+void diffCommand(const string& filename){
     string blobHash = getLastBlobHash(filename);//get the blob_hash of the file from the last commit
     if(blobHash.empty()){
         cout << "no previous commit found for file: " << filename << endl;//blob hash is empty it implies no record of the file begin commited 

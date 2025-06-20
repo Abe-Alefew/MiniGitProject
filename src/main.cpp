@@ -61,6 +61,14 @@ int main(int argc, char *argv[])
         mergeBranch(targetBranch);
         cout << "Merged branch '" << targetBranch << "' into current branch.\n";
     }
+    else if (command == "diff") {
+        if(argc < 3) {
+            cout << "Usage: ./minigit diff <file>\n";
+            return 1;
+        }
+        string filename = argv[2];
+        diffCommand(filename);
+    }
     else {
         cout << "Unknown command: " << command << "\n";
         return 1;
