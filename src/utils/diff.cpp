@@ -11,6 +11,14 @@
 namespace f = std::filesystem; 
 using namespace std; 
 
+//here we also need to insert the different colors to show insertion deletion and changes
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+//here we use reset to reset the color changed by the above colors 
+#define RESET "\033[0m"
+ 
+
 string getLastBlobHash(const string& filename){//get the blob hash of the file... before we have done some editing
     ifstream commitFile(".minigit/HEAD");//use HEAD to get the last commit
     string commitId; 
@@ -61,41 +69,56 @@ vector<string> splitLines(string content){//I am going to split the content(the 
 void showDiff(const vector<string>& oldLines, const vector<string>& newLines){
     int oldPtr = 0, newPtr = 0; //we can use two pointers to detect differences in each line
     int o = oldLines.size(), n = newLines.size(); 
-    while(oldPtr < o || newPtr < n){
+    while(oldPtr < o || newPtr < n){//while we are haven't reached the last eleement in either the vectors
         if(oldPtr < o && newPtr < n){
             if(oldLines[oldPtr] == newLines[newPtr]){
                 cout << oldLines[oldPtr] << endl; 
-                oldPtr++; 
+                oldPtr++;
                 newPtr++; 
             }else{
+                //hunk header print 
+                cout << YELLOW << "@@ -" << oldPtr + 1 << "+ " << newPtr + 1 << " @@\n" << RESET;
+                //insertion  
                 if(newPtr + 1 < n && oldLines[oldPtr] == newLines[newPtr + 1]){
-                    cout << "Line: " << newPtr + 1 << " inserted." << endl; 
-                    cout << "+ " << newLines[newPtr] << endl; 
+                    //cout << "Line: " << newPtr + 1 << " inserted." << endl; 
+                    cout << GREEN << "+ " << newLines[newPtr] << RESET << endl; 
                     newPtr++; 
-                }else if (oldPtr + 1 < o && newLines[newPtr] == oldLines[oldPtr + 1]){
-                    cout << "Line: " << oldPtr + 1 << " deleted." << endl; 
-                    cout << "- " << oldLines[oldPtr] << endl; 
+                }
+                //deletion
+                else if (oldPtr + 1 < o && newLines[newPtr] == oldLines[oldPtr + 1]){
+                    //cout << "Line: " << oldPtr + 1 << " deleted." << endl; we could actually do this instead of hunks
+                    cout << RED << "- " << oldLines[oldPtr] << RESET << endl; 
                     oldPtr++; 
                 }
-
+                //change (both insertion and deletion)
                 else{
-                    cout << "Line: " << oldPtr + 1 << "changed" << endl;
-                    cout << "-" << oldLines[oldPtr] << endl; 
-                    cout << "+" << newLines[newPtr] << endl; 
+                    //cout << "Line: " << oldPtr + 1 << "changed" << endl;
+                    cout << RED <<  "-" << oldLines[oldPtr] << RESET << endl; 
+                    cout << GREEN << "+" << newLines[newPtr] << RESET << endl; 
                     oldPtr++; 
                     newPtr++;
                 }
                  
             }
 
-        }else if(oldPtr < o){
-            cout << "Line: " << oldPtr + 1 << "deleted" << endl;
-            cout << "-" << oldLines[oldPtr] << endl; 
-            oldPtr++; 
-        }else if(newPtr < n){
-            cout << "Line: " << newPtr + 1 << "inserted" << endl; 
-            cout << "+" << newLines[newPtr] << endl; 
-            newPtr++; 
+        }
+        //deletion
+        else if(oldPtr < o){
+            cout << RED << "@@ -" << oldPtr + 1  << " +0 @@\n" << RESET; 
+            while(oldPtr< o){
+                cout << RED << "-" << oldLines[oldPtr] << RESET << endl; 
+                oldPtr++; 
+            }
+            
+        }
+        //insertion
+        else if(newPtr < n){
+            cout << YELLOW << "@@ -0 +" << newPtr + 1 << " @@\n" << RESET; 
+            while(newPtr< n){
+                cout << GREEN << "+" << newLines[newPtr] << RESET << endl; 
+                newPtr++;
+            }
+            
         }
     }
 }
