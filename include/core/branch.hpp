@@ -6,7 +6,7 @@
 using namespace std;
 class  BranchManager {
 public:
-    string repoPath; // could be a mistake
+    string repoPath;
 
     BranchManager(const string& repoPath);
 
