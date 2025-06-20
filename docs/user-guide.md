@@ -39,7 +39,7 @@ sudo apt install build-essential libssl-dev
 
 ```bash
 cd MiniGitProject
-make all
+make 
 ```
 
 This creates the `minigit` executable. Test it by running `./minigit` - you should see a usage message.
