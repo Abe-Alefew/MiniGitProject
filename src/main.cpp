@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
 using namespace std;
 
 // intializing the functions
@@ -13,6 +14,7 @@ void handleCheckoutCommand(const string& repoPath, const vector<string>& args);
 void mergeBranch(const string& targetBranch);
 void diffCommand(const string& filename); 
 void diffBetweenFiles(const string& file1, const string& file2);
+
 int main(int argc, char *argv[])
 {
     // argc represents the number of command line arguments passed to program
@@ -57,6 +59,7 @@ int main(int argc, char *argv[])
         string targetBranch = argv[2];
         mergeBranch(targetBranch);
         cout << "Merged branch '" << targetBranch << "' into current branch.\n";
+
     }else if (command == "diff") {
         if(argc == 3){
             diffCommand(argv[2]);
