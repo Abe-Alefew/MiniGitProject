@@ -25,9 +25,20 @@ void handleCheckoutCommand(const string& repoPath, const vector<string>& args) {
     if (headFile) {
         headFile << "ref: branches/" << branchName;
         headFile.close();
+
     } else {
         cout << "Error: could not update HEAD.\n";
         return;
     }
+    //tracking current branch
+    ofstream currentBranchFile(repoPath + "current_branch");
+    if (currentBranchFile) {
+        currentBranchFile << branchName;
+        currentBranchFile.close();
+    } else {
+        cout << "Error: could not update current_branch.\n";
+        return;
+    }
+    
     cout << "switched to Branch '" << branchName << "'.\n";
 }

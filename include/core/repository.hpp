@@ -21,7 +21,7 @@ namespace mgit
     public:
         static int commit(const string& message);
     public:
-        static int logCommits();
+         int logCommits();
     
     private:
         string mgitDir;

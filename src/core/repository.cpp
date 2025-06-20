@@ -78,6 +78,8 @@ namespace mgit
 
             // HEAD points to the default branch
             ofstream(".minigit/HEAD") << "ref: branches/main";
+            ofstream(".minigit/current_branch") << "ref: branches/main";
+
             // Create an empty branch 'main' initially
             ofstream(".minigit/branches/main") << "";
             ofstream(".minigit/staging_area.json") << "{}";
@@ -173,11 +175,20 @@ namespace mgit
     }
     int Repository::logCommits()
 {
-    string current = Repository().readFile(".minigit/HEAD");
+    // Read HEAD
+    string headContent = readFile(".minigit/HEAD");
+    if (headContent.rfind("ref: ", 0) != 0) {
+        cerr << "Invalid HEAD format.\n";
+        return 1;
+    }
 
-    while (!current.empty())
-    {
-        Commit commit = Repository().getCommitById(current);
+    //Read branch path and get current commit ID
+    string branchPath = headContent.substr(5); // after "ref: "
+    string current = readFile(".minigit/" + branchPath);
+
+    // 3. Loop and log each commit
+    while (!current.empty()) {
+        Commit commit = getCommitById(current);
         if (commit.hash.empty()) break;
 
         cout << "Commit: " << commit.hash << "\n"
@@ -190,4 +201,5 @@ namespace mgit
 
     return 0;
 }
+
 }

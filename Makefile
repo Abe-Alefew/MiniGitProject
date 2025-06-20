@@ -18,8 +18,8 @@ SRC = src/main.cpp \
 	  src/utils/file_io.cpp\
 	src/commands/checkout.cpp\
 	src/commands/branch.cpp\
-	src/core/branch.cpp
-
+	src/core/branch.cpp\
+	src/commands/merge.cpp
 # Object files
 OBJ = $(SRC:.cpp=.o)
 
@@ -36,10 +36,16 @@ $(TARGET): $(OBJ)
 # Compile source files
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+# Create .minigit directory if it does not exist
+.minigit:
+	mkdir -p .minigit
 
 # Clean build
 clean:
 	rm -f $(OBJ) $(TARGET)
+
+clean-data:
+	rm -rf .minigit
 
 # Run sample tests
 test: $(TARGET)

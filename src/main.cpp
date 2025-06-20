@@ -10,7 +10,7 @@ int commitCommand(const string& message);
 int logCommits();
 void handleBranchCommand(const string& repoPath, const vector<string>& args);
 void handleCheckoutCommand(const string& repoPath, const vector<string>& args);
-
+void mergeBranch(const string& targetBranch);
 int main(int argc, char *argv[])
 {
     // argc represents the number of command line arguments passed to program
@@ -50,7 +50,15 @@ int main(int argc, char *argv[])
         handleBranchCommand(repoPath, args);
     } else if (command == "checkout") {
         handleCheckoutCommand(repoPath, args);
-    } else {
+    } else if (command == "merge") {
+        if(argc < 3) {
+            cout << "Usage: ./minigit merge <branch-name>\n";
+            return 1;
+        }
+        string targetBranch = argv[2];
+        mergeBranch(targetBranch);
+        cout << "Merged branch '" << targetBranch << "' into current branch.\n";
+    }else {
         cout << "Unknown command: " << command << "\n";
         return 1;
     }
