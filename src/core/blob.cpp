@@ -1,24 +1,25 @@
 #include "core/blob.hpp"
-#include "core/hashing.hpp"
-#include "core/file_io.hpp"
+#include "utils/hashing.hpp"
+#include "utils/file_io.hpp"
 
 #include <filesystem>
 #include <fstream>
-
-namespace fs = std::filesystem;
+using namespace std;
+namespace fs = filesystem;
 
 namespace mgit {
 
-std::string Blob::create(const std::string& filepath) {
-    std::string content = readFile(filepath);  // read content
-    std::string hash = sha1(content);          // generate hash
+string Blob::create(const string& filepath) {
+    string content = readFile(filepath);  // read content
+    string hash = generateHash(content);     // generate hash
 
     fs::path blob_path = ".minigit/blobs/" + hash;
     if (!fs::exists(blob_path)) {
-        std::ofstream(blob_path) << content;
+        ofstream(blob_path) << content;
     }
 
     return hash;
 }
+
 
 }

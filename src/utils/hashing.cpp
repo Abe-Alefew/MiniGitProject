@@ -1,28 +1,21 @@
 #include <openssl/sha.h>
 #include <iomanip>
 #include <sstream>
-#include "core/hashing.hpp"
+#include "utils/hashing.hpp"
+using namespace std;
+
 
 namespace mgit {
 
-std::string generateHash(const std::string& content) {
+string generateHash(const string& content) {
+    // In OpenSSL, SHA_DIGEST_LENGTH is the length of the SHA-1 hash in bytes (20 bytes). that is because SHA-1 produces a 160-bit hash, which is 20 bytes long.
     unsigned char hash[SHA_DIGEST_LENGTH];
     SHA1(reinterpret_cast<const unsigned char*>(content.c_str()), content.size(), hash);
 
-    std::stringstream ss;
+    stringstream ss;
     for (int i = 0; i < SHA_DIGEST_LENGTH; ++i)
-        ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
+        ss << hex << setw(2) << setfill('0') << (int)hash[i]; // this converts each byte to a two-digit hexadecimal representation and appends to the stringstream
     return ss.str();
 }
 
-}
-
-std::string sha1(const std::string& input) {
-    unsigned char hash[SHA_DIGEST_LENGTH];
-    SHA1(reinterpret_cast<const unsigned char*>(input.c_str()), input.size(), hash);
-
-    std::stringstream ss;
-    for (int i = 0; i < SHA_DIGEST_LENGTH; ++i)
-        ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
-    return ss.str();
 }

@@ -1,7 +1,7 @@
-#include "core/repository.hpp"
-
+#include "core/repository.hpp" // using the header file for the Repository class
+using namespace mgit;
 int initCommand()
 {
-    mgit::Repository::init();
+    Repository::init();
     return 0;
 }

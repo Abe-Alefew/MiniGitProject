@@ -4,9 +4,9 @@
 #include <string>
 #include <openssl/sha.h>
 #include <iomanip>
-
+using namespace std;
 namespace mgit {
-    std::string generateHash(const std::string& content);
+    string generateHash(const string& content);
 }
 
 #endif

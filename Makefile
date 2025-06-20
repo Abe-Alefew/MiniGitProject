@@ -1,34 +1,65 @@
+# Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Iinclude
+CXXFLAGS = -std=c++17 -Iinclude -Wall -Wextra -g
 
-OPENSSL_INC ?= C:/Users/$(USERNAME)/scoop/apps/openssl/current/include
-OPENSSL_LIB ?= C:/Users/$(USERNAME)/scoop/apps/openssl/current/lib
+# Linker flags (Linux/macOS)
+LDFLAGS = -lssl -lcrypto
 
-ifeq ("$(wildcard $(OPENSSL_INC)/openssl/sha.h)","")
-$(error OpenSSL headers not found at $(OPENSSL_INC). Please install OpenSSL or set OPENSSL_INC and OPENSSL_LIB manually.)
-endif
+# Source files
+SRC = src/main.cpp \
+      src/commands/add.cpp \
+      src/commands/commit.cpp \
+	  src/core/commit.cpp\
+      src/commands/log.cpp \
+      src/utils/hashing.cpp \
+      src/core/blob.cpp\
+	  src/core/repository.cpp\
+	  src/commands/init.cpp\
+	  src/utils/file_io.cpp\
+	src/commands/checkout.cpp\
+	src/commands/branch.cpp\
+	src/core/branch.cpp\
+	src/commands/merge.cpp\
+	src/utils/diff.cpp
+# Object files
+OBJ = $(SRC:.cpp=.o)
 
-ifeq ("$(wildcard $(OPENSSL_LIB)/libcrypto.lib)","")
-ifeq ("$(wildcard $(OPENSSL_LIB)/libcrypto.a)","")
-$(error OpenSSL libraries not found at $(OPENSSL_LIB). Please install OpenSSL or set OPENSSL_LIB manually.)
-endif
-endif
+# Executable name
+TARGET = minigit
 
-CXXFLAGS += -I"$(OPENSSL_INC)"
-LDFLAGS = -L"$(OPENSSL_LIB)" -lssl -lcrypto
+# Default target
+all: $(TARGET)
 
-SRC = $(wildcard src/*.cpp) $(wildcard src/*/*.cpp) $(wildcard src/*/*/*.cpp)
-OUT = minigit
-
-$(OUT): $(SRC)
+# Link the executable
+$(TARGET): $(OBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-clean:
-	rm -f $(OUT)
+# Compile source files
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+# Create .minigit directory if it does not exist
+.minigit:
+	mkdir -p .minigit
 
-test: $(OUT)
+# Clean build
+clean:
+	rm -f $(OBJ) $(TARGET)
+
+clean-data:
+	rm -rf .minigit
+
+# Run sample tests
+test: $(TARGET)
 	@echo "Running sample tests..."
-	@$(OUT) init
-	@echo Hello > testfile.txt
-	@$(OUT) add testfile.txt
-	@echo "Tests completed."
+	@./$(TARGET) init
+	@touch testfile.txt
+	@echo "Hello MiniGit!" > testfile.txt
+	@./$(TARGET) add testfile.txt
+	@./$(TARGET) commit -m "Test Commit"
+	@./$(TARGET) log
+	@./$(TARGET) branch
+	@./$(TARGET) branch test-branch
+	@./$(TARGET) checkout test-branch
+	@echo "Tests done."
+
+.PHONY: all clean test

@@ -1,13 +1,10 @@
-#pragma once
-
 #include "core/commit.hpp"
 #include <string>
 #ifndef REPOSITORY_HPP
 #define REPOSITORY_HPP
-
+using namespace std;
 namespace mgit
 {
-
     class Repository
     {
     public:
@@ -15,24 +12,24 @@ namespace mgit
 
         bool isInitialized();
         Commit getHeadCommit();
-        Commit getCommitById(const std::string& hash);
+        Commit getCommitById(const string& hash);
         
     public:
         static void init();
     public:
-        static void add(const std::string& file);
+        static void add(const string& file);
     public:
-        static int commit(const std::string& message);
+        static int commit(const string& message);
     public:
-        static int logCommits();
+         int logCommits();
     
     private:
-        std::string mgitDir;
-        std:: string commitsDir;
-        std::string headFile;
+        string mgitDir;
+        string commitsDir;
+        string headFile;
 
-        std::string readFile(const std::string& path) const;
-        Commit loadCommitFromFile(const std::string& path) const;
+        string readFile(const string& path) const;
+        Commit loadCommitFromFile(const string& path) const;
     
     };
 }
