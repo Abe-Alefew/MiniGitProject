@@ -93,7 +93,8 @@ This project demonstrates:
 | `log`      | `src/commands/log.cpp`      | ✅ Complete        | Display commit history            |
 | `branch`   | `src/commands/branch.cpp`   | ✅ Complete        | Branch creation and listing       |
 | `checkout` | `src/commands/checkout.cpp` | ✅ Complete        | Switch branches                   |
-| `merge`    | `src/commands/merge.cpp`    | ❌ Not Implemented | Merge branches                    |
+| `merge`    | `src/commands/merge.cpp`    | ✅ Complete        | Merge branches                    |
+| `diff`     | `src/utils/diff.cpp`        | ✅ Complete        | Show Differences Between Files    |
 
 ## 🚀 Build & Usage
 
@@ -106,7 +107,9 @@ This project demonstrates:
 ### Compilation
 
 ```bash
-make all
+make clean
+make clean-data
+make 
 ```
 
 ### Basic Usage
@@ -132,6 +135,12 @@ make all
 
 # Switch branches
 ./minigit checkout <branch-name>
+
+# View file changes before committing
+./minigit diff <file-name>
+
+# Merge  branch into main
+./minigit merge <branch-name>
 ```
 
 ### Running Tests
@@ -142,7 +151,7 @@ make test
 
 ## 📊 Implementation Status
 
-### ✅ Fully Implemented (7/8 Core Features)
+### ✅ Fully Implemented (Core Features)
 
 1. **Repository Initialization** - Complete with proper directory structure
 2. **File Staging** - SHA-1 hashing and blob storage
@@ -151,17 +160,11 @@ make test
 5. **Branch Management** - Creation and listing
 6. **Branch Switching** - HEAD pointer management
 7. **Object Storage** - Content-addressable blob system
+8. **Merge Functionality** - Three-way merge, conflict detection, and LCA finding
+9. **Diff Viewer** - Line-by-line difference display (Optional Feature)
 
 ### ❌ Pending Implementation (1/8 Core Features)
 
-1. **Merge Functionality** - Three-way merge, conflict detection, and LCA finding
-
-### 🔄 Optional Features Not Implemented
-
-- **Diff Viewer** - Line-by-line difference display
-- **Conflict Resolution** - Interactive merge conflict handling
-- **Remote Operations** - Push/pull functionality (not in scope)
-- **Checkout by Commit Hash** - Direct commit checkout (currently branch-only)
 
 ## 🛠️ Technical Implementation Details
 
@@ -194,20 +197,12 @@ make test
 
 ## 🚧 Future Enhancements
 
-### Priority 1: Complete Core Features
+###  Enhanced Functionality
 
-- [ ] Implement three-way merge algorithm
-- [ ] Add conflict detection and resolution
-- [ ] Implement checkout by commit hash
-
-### Priority 2: Enhanced Functionality
-
-- [ ] Add diff viewer with line-by-line comparison
-- [ ] Implement file status checking
 - [ ] Add commit amendment functionality
 - [ ] Create comprehensive error handling
 
-### Priority 3: Advanced Features
+###  Advanced Features
 
 - [ ] Implement tag system
 - [ ] Add stash functionality
@@ -233,6 +228,6 @@ This implementation successfully demonstrates:
 
 ---
 
-**Team Implementation Status**: 7/8 core features completed (87.5%)  
+
 **Codebase Quality**: Production-ready with comprehensive error handling  
 **Documentation**: Comprehensive with clear usage examples

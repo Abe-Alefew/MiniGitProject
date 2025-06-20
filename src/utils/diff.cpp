@@ -1,4 +1,4 @@
-#include "utils/diff.hpp"
+#include"utils/diff.hpp"
 #include <iostream> 
 #include <fstream>
 #include <sstream> 
@@ -164,7 +164,7 @@ void diffCommand(const string& filename){
 }
 
 // a  function for showing the difference between two files 
-void diffBetwenFiles(const string& file1, const string& file2){
+void diffBetweenFiles(const string& file1, const string& file2){
     ifstream file1content(file1); 
     ifstream file2content(file2); 
     
@@ -199,5 +199,3 @@ void diffBetwenFiles(const string& file1, const string& file2){
     //we are now using the show diff function to show the difference and print it
     showDiff(file1vector, file2vector);
 }
-
-

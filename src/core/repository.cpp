@@ -37,6 +37,13 @@ namespace mgit
         string headId = readFile(headFile);
         if (headId.empty()) return {};
 
+        //resolve branch ref if HEAD is a ref
+        if (headId.rfind("ref: ", 0) == 0) {
+            string branchPath = headId.substr(5); // remove "ref: "
+            headId = readFile(".minigit/" + branchPath); // read commit hash from branch file
+        }
+
+        if (headId.empty()) return {}; // if it's empty,abort
         string path = commitsDir + "/" + headId + ".json";
         return fs::exists(path) ? loadCommitFromFile(path) : Commit{};
     }

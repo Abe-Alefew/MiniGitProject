@@ -241,7 +241,7 @@ void mergeBranch(const string& targetBranch){
 
     // Build the JSON commit object
     json commitJson;
-    commitJson["commit_id"] = newCommitId;
+    commitJson["hash"] = newCommitId;
     commitJson["timestamp"] = timestamp;
     commitJson["message"] = "Merge " + targetBranch + " into current branch";
     commitJson["parents"] = parents;

@@ -64,14 +64,18 @@ int main(int argc, char *argv[])
         if(argc == 3){
             diffCommand(argv[2]);
             return 0;  
-        }else if (argc == 4){
+        }else{
+            cout << "Usage:\n"
+                 << "./minigit diff <file>\n";
+            return 1; 
+        }
+    }else if(command == "diff-files"){
+        if (argc == 4){
             diffBetweenFiles(argv[2], argv[3]); 
             return 0; 
         }else{
-            cout << "Usage:\n"
-                 << "./minigit diff <file>\n"
-                 << "./minigit diff <file1> <file2>\n";
-            return 1; 
+            cout << "usage: ./minigit diff-files <file1> <file2>\n";
+            return 1;
         }
     }
     else {

@@ -20,7 +20,7 @@ namespace mgit
     {
         Commit c;
         json j = json::parse(content);
-        c.hash = j["hash"];
+        c.hash = j.value("hash", "");
         c.parent = j["parent"];
         c.message = j["message"];
         c.timestamp = j["timestamp"];

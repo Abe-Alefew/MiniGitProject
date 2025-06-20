@@ -108,7 +108,7 @@ ls -la .minigit/
 ls -la .minigit/commits/
 
 # If badly corrupted, restart
-rm -rf .minigit
+make clean-data
 ./minigit init
 ```
 
