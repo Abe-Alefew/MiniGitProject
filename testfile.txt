@@ -1,1 +1,2 @@
 Hello MiniGit!
+hello mini on test branch

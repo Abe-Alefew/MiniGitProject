@@ -16,11 +16,11 @@ SRC = src/main.cpp \
 	  src/core/repository.cpp\
 	  src/commands/init.cpp\
 	  src/utils/file_io.cpp\
-	src/commands/checkout.cpp\
-	src/commands/branch.cpp\
-	src/core/branch.cpp\
-	src/commands/merge.cpp\
-	src/utils/diff.cpp
+	  src/commands/checkout.cpp\
+      src/commands/branch.cpp\
+	  src/core/branch.cpp\
+	  src/commands/merge.cpp\
+	  src/utils/diff.cpp
 # Object files
 OBJ = $(SRC:.cpp=.o)
 

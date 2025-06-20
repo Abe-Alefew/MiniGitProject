@@ -138,6 +138,11 @@ namespace mgit
         }
         staging >> staged_files_json;
 
+        if (staged_files_json.empty()) {
+            cout << "No changes to commit. Staging area is empty.\n";
+            return 1;
+        }
+
         map<string, string> files;
         for (auto &[fname, blob] : staged_files_json.items())
         {
