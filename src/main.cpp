@@ -13,6 +13,8 @@ void handleBranchCommand(const string& repoPath, const vector<string>& args);
 void handleCheckoutCommand(const string& repoPath, const vector<string>& args);
 void mergeBranch(const string& targetBranch);
 void diffCommand(const string& filename); 
+void diffBetweenFiles(const string& file1, const string& file2);
+
 int main(int argc, char *argv[])
 {
     // argc represents the number of command line arguments passed to program
@@ -57,13 +59,20 @@ int main(int argc, char *argv[])
         string targetBranch = argv[2];
         mergeBranch(targetBranch);
         cout << "Merged branch '" << targetBranch << "' into current branch.\n";
-    } else if (command == "diff") {
-        if (argc < 3) {
-            cout << "Usage: ./minigit diff <file>\n";
-            return 1;
+
+    }else if (command == "diff") {
+        if(argc == 3){
+            diffCommand(argv[2]);
+            return 0;  
+        }else if (argc == 4){
+            diffBetweenFiles(argv[2], argv[3]); 
+            return 0; 
+        }else{
+            cout << "Usage:\n"
+                 << "./minigit diff <file>\n"
+                 << "./minigit diff <file1> <file2>\n";
+            return 1; 
         }
-        string filename = argv[2];
-        diffCommand(filename);
     }
     else {
         cout << "Unknown command: " << command << "\n";
