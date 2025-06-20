@@ -7,16 +7,20 @@
 #include <ctime> // changing the created time to human recongnizable form 
 #include <string> 
 #include <filesystem> 
-#include <sstream> // chaing number to string, used for chaning commitid's to strings
+#include <sstream> // changing number to string, used for chaning commitid's to strings
 #include <map> // for creating file->hash key and value pairs 
 #include <unordered_set> 
 #include<climits>// for INT_MAX
 #include<algorithm>
+#include<nlohmann/json.hpp>
+using json = nlohmann::json;
+
 using namespace std; 
 namespace f = std::filesystem; // just an alias to shorten filesystem usage
 
 //we first have to check if the files are present in the first place
-// the runtime files like ".minigit/branches", ".minigit/commits", ".minigit/blobs"...\
+
+// the runtime files like ".minigit/branches", ".minigit/commits", ".minigit/blobs"...
 // we use the filesystem to check and create them 
 void folderExists(){
     //check .minigit subfolders if existent then use them, if not create them
@@ -55,30 +59,30 @@ string saveBlob(const string& content){
 //this function is used to compare the files in the two commits
 map<string, string> commitToMap(const string& commitId){
     map<string, string> file_hash; 
-    ifstream commitContent(".minigit/commits/" + commitId);//enter the file with the specific commitId
+    string path = ".minigit/commits/" + commitId + ".json";
+    cout << "Opening commit file: " << path << endl;
+     ifstream commitContent(path);//enter the file with the specific commitId
     if (!commitContent.is_open()) {
-    cerr << "Error: file not found." << endl; 
+    cerr << "Error: commit file not found." << commitId << endl; 
     return file_hash;
 }
-    string line;//sotrage for each line
-    bool isfile = false;//to track file:
-    while(std::getline(commitContent, line)){//read each line 
-        if(line == "files:"){
-            isfile = true; 
-            continue; 
-        }
-        if(isfile && !line.empty()){//read the lines after files:
-            int position = 0; 
-            for(int i = 0; i < line.size(); i++){
-                if(line[i] == ':'){
-                    position = i; 
-                }
-            }
-            string filename = line.substr(0, position); 
-            string hash = line.substr(position + 1); 
+     cout << "Trying to open: .minigit/commits/" << commitId <<".json"<< endl;
 
-            file_hash[filename] = hash; 
-        }
+    json commitJson;
+    try {
+        commitContent >> commitJson;
+    } catch (json::parse_error& e) {
+        cerr << "Error: Failed to parse commit JSON: " << e.what() << endl;
+        return file_hash;
+    }
+
+    if (!commitJson.contains("files") || !commitJson["files"].is_object()) {
+        cerr << "Error: commit JSON missing 'files' object." << endl;
+        return file_hash;
+    }
+
+    for (auto& [filename, blobHash] : commitJson["files"].items()) {
+        file_hash[filename] = blobHash.get<string>();
     }
     return file_hash; 
 }
@@ -89,24 +93,26 @@ void collectAncestors(const string& commitId, map<string, int>& ancestors, int d
     if(commitId.empty() || ancestors.count(commitId)) return;// if root is reached or if already visited
 
     ancestors[commitId] = depth;
-
-
-    ifstream file(".minigit/commits/" + commitId);//open the commit to find the parent and traverse deep
+    ifstream file(".minigit/commits/" + commitId + ".json");//open the commit to find the parent and traverse deep
     if (!file.is_open()) {
-    cerr << "Error: file not found." << endl; 
+    cerr << "Error: file not found." << " .minigit/commits/" << commitId << ".json" <<endl; 
     return;
     }
-    string commitContent; 
-    while(std::getline(file, commitContent)){//read each line
-        if(commitContent.rfind("parents:", 0) == 0){//if the line starts with parents: 
-            string Parents = commitContent.substr(9);//skip "parents: " and get the content
-            //now we use stringstream to split by comma
-            stringstream ss(Parents);
-            string parent; 
-            while(std::getline(ss, parent, ',')){//get each parents
-                parent.erase(remove_if(parent.begin(), parent.end(), ::isspace), parent.end());//removing spaces from each parent, specifically for second and so on parents
-                collectAncestors(parent, ancestors, depth + 1);//now 
-            } 
+    cout << "Trying to open: .minigit/commits/" << commitId << ".json"<< endl;
+
+    json commitJson;
+    try {
+        file >> commitJson;
+    } catch (json::parse_error& e) {
+        cerr << "Error parsing commit JSON: " << e.what() << endl;
+        return;
+    }
+
+    if (commitJson.contains("parents") && commitJson["parents"].is_array()) {
+        for (const auto& parent : commitJson["parents"]) {
+            if (parent.is_string()) {
+                collectAncestors(parent.get<string>(), ancestors, depth + 1);
+            }
         }
     }
 
@@ -138,27 +144,42 @@ string findCommonAncestor(const string& commitIdOurs, const string& commitIdThei
 //main merge function to merge the two functions 
 void mergeBranch(const string& targetBranch){
     folderExists(); 
-
-    //get the commitIds of ours and their
-    //head commit Id
+    // read current branch from head
     ifstream head(".minigit/HEAD"); 
     if (!head.is_open()) {
     cerr << "Error: file not found." << endl; 
     return;
 }
-    string ourCommitId; 
-    std::getline(head, ourCommitId); 
+    string refLine; 
+    std::getline(head, refLine); 
     head.close(); 
 
-    //get the commitId of their 
-    ifstream mergedBranch(".minigit/branches/" + targetBranch);//enter to the specific branch by using tragetBranch
-    if (!mergedBranch.is_open()) {
-    cerr << "Error: file not found." << endl; 
-    return;
-}
-    string theirCommitId; 
-    std::getline(mergedBranch, theirCommitId); 
-    mergedBranch.close(); 
+    if (refLine.rfind("ref: ", 0) != 0) {
+        cerr << "Invalid HEAD format.\n";
+        return;
+    }
+    string currentBranchPath = refLine.substr(5);  // e.g., "branches/main"
+    string currentBranch = currentBranchPath.substr(currentBranchPath.find_last_of('/') + 1);
+    //get the commitId 
+    ifstream branchFile(".minigit/" + currentBranchPath);
+    if (!branchFile.is_open()) {
+        cerr << "Error: Cannot read current branch commit ID.\n";
+        return;
+    }
+     string ourCommitId;
+    getline(branchFile, ourCommitId);
+    branchFile.close();
+
+    // Theirs (from target branch)
+    ifstream targetFile(".minigit/branches/" + targetBranch);
+    if (!targetFile.is_open()) {
+        cerr << "Error: Target branch '" << targetBranch << "' not found.\n";
+        return;
+    }
+    string theirCommitId;
+    getline(targetFile, theirCommitId);
+    targetFile.close();
+
 
     //get the commitId for base 
     string baseCommitId = findCommonAncestor(ourCommitId, theirCommitId); 
@@ -191,11 +212,7 @@ void mergeBranch(const string& targetBranch){
             //retrieve both files contents
             string oursContent = blobContent(oursFileHash); 
             string theirsContent = blobContent(theirsFileHash);
-
-
-            string conflict = "<<<<<<< ours\n" + oursContent + 
-            "\n=======\n" + theirsContent + "\n>>>>>>> theirs\n"; 
-
+            string conflict = "<<<<<<< ours\n" + oursContent + "\n=======\n" + theirsContent + "\n>>>>>>> theirs\n"; 
             string mergedHash = saveBlob(conflict);//create a new blob file for conflict 
             mergedFiles[file] = mergedHash; 
         }
@@ -212,34 +229,36 @@ void mergeBranch(const string& targetBranch){
     auto now = chrono::system_clock::to_time_t(chrono::system_clock::now());
     string timestamp = string(ctime(&now)); 
     timestamp.pop_back(); 
+    //now create the json file
+    // Prepare parents as a JSON array
+    json parents = json::array({ourCommitId, theirCommitId});
 
-    //now create the file
-    ofstream Commit(".minigit/commits/" + newCommitId); 
-    Commit << "commit_id: " << newCommitId << endl;
-    Commit << "timestamp: " << timestamp << endl;
-    Commit << "message: Merge " << targetBranch << " into current branch" << endl;
-    Commit << "parents: " << ourCommitId << ", " << theirCommitId << endl;
-    Commit << "files:" << endl;
-    for(auto& [file, blobHash] : mergedFiles){
-        Commit << file << ":" << blobHash << endl;// add every blob names and their unique id from mergedFiles
+    // Convert mergedFiles map<string, string> to json
+    json filesJson = json::object();
+    for (const auto& [file, blobHash] : mergedFiles) {
+        filesJson[file] = blobHash;
     }
-    Commit.close(); 
+
+    // Build the JSON commit object
+    json commitJson;
+    commitJson["commit_id"] = newCommitId;
+    commitJson["timestamp"] = timestamp;
+    commitJson["message"] = "Merge " + targetBranch + " into current branch";
+    commitJson["parents"] = parents;
+    commitJson["files"] = filesJson;
+
+    // Write JSON commit to file
+    ofstream commitFile(".minigit/commits/" + newCommitId + ".json");
+    if (!commitFile.is_open()) {
+        cerr << "Error: Could not open commit file for writing\n";
+        return;
+    }
+    commitFile << commitJson.dump(4); // pretty-print with 4 spaces indent
+    commitFile.close();
 
     //Final code, making head point to newCommitId
-    ifstream currentBranchFile(".minigit/current_branch");
-    if (!currentBranchFile.is_open()) {
-    cerr << "Error: file not found." << endl; 
-    return;
-} 
-    string currentBranch; 
-    std::getline(currentBranchFile, currentBranch); 
-    currentBranchFile.close(); 
+    ofstream(".minigit/" + currentBranchPath) << newCommitId;
+    ofstream(".minigit/HEAD") << "ref: " + currentBranchPath;
 
-    ofstream headWrite(".minigit/HEAD"); 
-    headWrite << newCommitId; 
-    headWrite.close(); 
-
-    ofstream branchWrite(".minigit/branches/" + currentBranch); 
-    branchWrite << newCommitId; 
-    branchWrite.close(); 
+    cout << "Merged branch '" << targetBranch << "' into '" << currentBranch << "'. New commit: " << newCommitId << "\n";
 }
