@@ -77,7 +77,23 @@ This project demonstrates:
 - Branch existence validation
 - HEAD pointer management for branch switching
 
-#### 5. Cryptographic Hashing (`src/utils/hashing.cpp`)
+#### 5. Merge Operation (src/commands/merge.cpp)
+
+- Integrates changes from a target branch into the current branch
+- Handles parent-commit tracking for merges (records both parents in commit metadata)
+- Automatically generates a merged commit with combined file mappings
+- Supports simple fast-forward and non-conflicting merges
+- Updates HEAD and commit history accordingly
+
+#### 6. Difference Viewer (src/utils/diff.cpp)
+
+- Compares current working file with its last committed version (diff)
+- Supports arbitrary file-to-file comparison (diff-files)
+- Uses line-by-line comparison with clear output format
+- Highlights insertions (+), deletions (-), and changes using colored terminal output
+- Utilizes commit and blob metadata for precise file history tracking
+
+#### 7. Cryptographic Hashing (`src/utils/hashing.cpp`)
 
 - SHA-1 implementation using OpenSSL
 - Content integrity verification
@@ -163,7 +179,7 @@ make test
 8. **Merge Functionality** - Three-way merge, conflict detection, and LCA finding
 9. **Diff Viewer** - Line-by-line difference display (Optional Feature)
 
-### ❌ Pending Implementation (1/8 Core Features)
+
 
 
 ## 🛠️ Technical Implementation Details
